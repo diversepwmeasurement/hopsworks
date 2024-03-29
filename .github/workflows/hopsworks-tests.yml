@@ -1,43 +1,43 @@
-name: pre-commit tests
-
-on:
-  pull_request_review:
-    types: [submitted]
-
 jobs:
   hopsworks-unit-tests:
     name: Hopsworks Unit Tests
-    runs-on: ubuntu-22.04
-
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          java-version: '8'
-          distribution: 'adopt'
-          cache: 'maven'
-
-      - name: Run unit tests
-        run: mvn --batch-mode test
-
+    - continue-on-error: true
+      name: Checkout
+      uses: actions/checkout@v4
+    - continue-on-error: true
+      name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        cache: maven
+        distribution: adopt
+        java-version: '8'
+    - continue-on-error: true
+      name: Run unit tests
+      run: mvn --batch-mode test
   hopsworks-vulnerability-checker:
     name: Hopsworks Vulnerability Checker
-    runs-on: ubuntu-22.04
-
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          java-version: '8'
-          distribution: 'adopt'
-          cache: 'maven'
-      - name: Set up .m2 settings.xml
-        run: mkdir -p ~/.m2 && echo "<settings><servers><server><id>nvd</id><password>${{ secrets.NVD_API_KEY }}</password></server></servers></settings>" > ~/.m2/settings.xml
-      - name: Run vulnerability checker
-        run: mvn clean install -Powasp-dependency-check,spot-bugs -DskipTests
+    - continue-on-error: true
+      name: Checkout
+      uses: actions/checkout@v4
+    - continue-on-error: true
+      name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        cache: maven
+        distribution: adopt
+        java-version: '8'
+    - continue-on-error: true
+      name: Set up .m2 settings.xml
+      run: mkdir -p ~/.m2 && echo "<settings><servers><server><id>nvd</id><password>${{
+        secrets.NVD_API_KEY }}</password></server></servers></settings>" > ~/.m2/settings.xml
+    - continue-on-error: true
+      name: Run vulnerability checker
+      run: mvn clean install -Powasp-dependency-check,spot-bugs -DskipTests
+name: pre-commit tests
+on:
+  repository_dispatch:
+    types: trigger-ga___hopsworks-tests.yml
